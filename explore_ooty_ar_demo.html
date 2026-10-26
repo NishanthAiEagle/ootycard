@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#12392e" />
+<title>Explore Ooty AR — Interactive Prototype</title>
+<style>
+  :root{
+    --forest:#12392e; --forest2:#1c5741; --lime:#d7f36b; --cream:#f7f5ec;
+    --ink:#17382d; --muted:#687a70; --card:#fffef9; --line:#e4e8dc;
+    --shadow:0 18px 48px rgba(13,43,32,.16);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#e9eee5;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  button{font:inherit;cursor:pointer}
+  .app{max-width:1180px;margin:0 auto;min-height:100vh;background:var(--cream);overflow:hidden;box-shadow:0 0 70px #163b2a14}
+  .topbar{height:70px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:var(--forest);color:#fff;gap:16px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.04em;font-size:20px}
+  .brand-mark{height:38px;width:38px;border-radius:13px;background:var(--lime);display:grid;place-items:center;color:var(--forest);font-size:22px}
+  .brand small{display:block;font-size:10px;letter-spacing:.17em;font-weight:700;color:#c9d9cd;margin-top:2px}
+  .top-actions{display:flex;align-items:center;gap:10px}
+  .pill{border:1px solid #ffffff42;color:#fff;background:#ffffff0d;padding:9px 13px;border-radius:999px;font-size:12px;font-weight:750}
+  .hero{padding:26px 24px 22px;background:linear-gradient(115deg,#f8f7ee 0%,#e6f1d9 53%,#d9e9d7 100%);position:relative}
+  .hero:after{content:"";position:absolute;right:-55px;top:-130px;width:310px;height:310px;border-radius:50%;background:#ffffff55;pointer-events:none}
+  .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:#50705b;font-weight:850}
+  h1{font-size:clamp(28px,4vw,48px);line-height:1.02;letter-spacing:-.055em;margin:9px 0 9px;max-width:650px}
+  h1 span{color:#4f7e35}
+  .hero p{margin:0;color:#536b5d;max-width:620px;line-height:1.55;font-size:14px}
+  .hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;position:relative;z-index:1}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .tag{background:#fff;border:1px solid #dfe8d7;padding:7px 10px;border-radius:999px;font-size:11px;font-weight:750;color:#375d43}
+  .hero-cta{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .primary,.secondary{border:0;border-radius:13px;padding:12px 15px;font-size:12px;font-weight:850;display:inline-flex;align-items:center;gap:8px;justify-content:center}
+  .primary{background:var(--forest);color:white;box-shadow:0 8px 18px #12392e20}
+  .primary:hover{background:#205b43}
+  .secondary{background:#fff;color:var(--forest);border:1px solid #d8e2d5}
+  .content{padding:18px 24px 28px}
+  .section-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .section-head h2{font-size:18px;margin:0;letter-spacing:-.03em}
+  .section-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
+  .segmented{display:flex;padding:4px;background:#e7ebdf;border-radius:12px;gap:3px}
+  .segmented button{border:0;background:transparent;color:#5d7064;padding:8px 12px;border-radius:9px;font-size:11px;font-weight:800}
+  .segmented button.active{background:#fff;color:var(--forest);box-shadow:0 2px 8px #183b2a10}
+  .workspace{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,.8fr);gap:16px;align-items:stretch}
+  .map-card{border-radius:22px;overflow:hidden;background:#c7dfc0;min-height:500px;position:relative;box-shadow:var(--shadow);isolation:isolate}
+  .map-art{position:absolute;inset:0;overflow:hidden;background:
+    radial-gradient(ellipse at 50% 47%,#6eaa68 0 9%,transparent 10%),
+    radial-gradient(ellipse at 68% 25%,#9fca7d 0 15%,transparent 16%),
+    radial-gradient(ellipse at 25% 33%,#83b96b 0 19%,transparent 20%),
+    radial-gradient(ellipse at 78% 72%,#70a65f 0 18%,transparent 19%),
+    linear-gradient(165deg,#a9d6e6 0%,#d7eac5 28%,#8bbd77 56%,#4f8b55 100%)}
+  .mountain{position:absolute;left:-8%;right:-8%;top:1%;height:30%;background:#668f9c;clip-path:polygon(0 100%,8% 55%,16% 75%,27% 13%,35% 58%,46% 0,55% 50%,64% 18%,76% 64%,87% 24%,100% 100%);opacity:.72}
+  .mountain.back{top:5%;height:27%;background:#c0d6d3;opacity:.8;transform:scaleX(-1)}
+  .cloud{position:absolute;top:10%;font-size:30px;opacity:.55;filter:blur(.3px)}
+  .lake{position:absolute;width:37%;height:24%;left:39%;top:29%;background:linear-gradient(140deg,#b8edf0,#4babc2 52%,#3b8da6);border:5px solid #e8efcf;border-radius:55% 45% 49% 51% / 40% 43% 57% 60%;transform:rotate(-12deg);box-shadow:0 7px 0 #467f5a}
+  .lake:after{content:"";position:absolute;inset:18% 22%;border-top:2px solid #e7ffff99;border-bottom:2px solid #e7ffff66;border-radius:50%;transform:rotate(12deg)}
+  .road{position:absolute;width:115%;height:29%;left:-8%;top:54%;border:15px solid #e8e1bd;border-left-color:transparent;border-right-color:transparent;border-radius:50%;transform:rotate(-14deg);box-shadow:0 0 0 3px #9b9d7c}
+  .road.r2{top:38%;left:-7%;height:35%;width:112%;transform:rotate(30deg);border-width:9px;opacity:.8}
+  .tea{position:absolute;width:35%;height:27%;left:-4%;bottom:5%;transform:rotate(-12deg);border-radius:12px;background:repeating-linear-gradient(166deg,#477d3e 0 5px,#8fbd5b 6px 10px,#d0e49a 11px 13px);clip-path:polygon(0 5%,100% 0,82% 100%,0 85%);opacity:.9}
+  .garden{position:absolute;right:3%;top:42%;width:19%;height:20%;border-radius:50%;background:repeating-conic-gradient(#e6d4b5 0 7deg,#df7c79 8deg 14deg,#6d9f55 15deg 24deg);border:5px solid #e9e9ca;box-shadow:0 5px 0 #4c7d4b}
+  .forest{position:absolute;inset:20% 0 0;background-image:radial-gradient(ellipse at center,#276544 0 18%,transparent 19%),radial-gradient(ellipse at center,#3f7c45 0 18%,transparent 19%);background-size:40px 45px,53px 59px;background-position:0 0,18px 24px;opacity:.28;mask-image:linear-gradient(transparent,#000 12%,#000 90%,transparent)}
+  .mini-houses{position:absolute;left:25%;top:35%;font-size:24px;letter-spacing:8px;filter:drop-shadow(0 3px 2px #173e2c44)}
+  .rail{position:absolute;left:-4%;top:64%;font-size:27px;transform:rotate(-12deg);filter:drop-shadow(0 3px 2px #173e2c55)}
+  .map-top-label{position:absolute;top:16px;left:16px;background:#ffffffeb;padding:9px 12px;border-radius:13px;box-shadow:0 4px 15px #193f2b18;max-width:75%}
+  .map-top-label strong{display:block;font-size:13px}
+  .map-top-label span{font-size:10px;color:#637569}
+  .map-controls{position:absolute;left:15px;right:15px;bottom:15px;display:flex;gap:7px;flex-wrap:wrap;z-index:4}
+  .map-controls button{border:1px solid #ffffff99;background:#ffffffeb;color:#234c35;padding:9px 11px;border-radius:999px;font-size:10px;font-weight:850;box-shadow:0 3px 10px #143d251c}
+  .map-controls button.active{background:var(--forest);color:white}
+  .pin{position:absolute;z-index:3;border:0;background:transparent;display:flex;align-items:center;gap:6px;filter:drop-shadow(0 4px 3px #143b2b4a);transition:transform .18s}
+  .pin:hover,.pin.selected{transform:translateY(-4px) scale(1.05)}
+  .pin .dot{height:33px;width:33px;display:grid;place-items:center;border-radius:50% 50% 50% 7px;transform:rotate(-45deg);border:3px solid white;color:white;font-size:15px}
+  .pin .dot span{transform:rotate(45deg)}
+  .pin .label{background:#12392e;color:white;padding:7px 9px;border:1px solid #ffffff9c;border-radius:8px;font-size:10px;font-weight:850;white-space:nowrap}
+  .pin .label small{display:block;font-size:9px;color:#d7f36b;font-weight:650;margin-top:2px}
+  .pin.blue .dot{background:#258fdb}.pin.pink .dot{background:#e94f87}.pin.orange .dot{background:#e88b24}.pin.purple .dot{background:#8a54d8}.pin.green .dot{background:#30945d}.pin.red .dot{background:#e44d4d}
+  .pin.p1{left:37%;top:25%}.pin.p2{left:60%;top:40%}.pin.p3{left:8%;top:51%}.pin.p4{right:3%;top:61%}.pin.p5{left:12%;top:72%}.pin.p6{right:14%;top:24%}
+  .restaurant-hub{position:absolute;z-index:3;left:45%;top:51%;transform:translate(-50%,-50%);border:2px solid #fff;background:linear-gradient(140deg,#a92d28,#6f1519);color:#fff;border-radius:16px;padding:11px 15px;text-align:center;box-shadow:0 0 0 5px #ffce5b66,0 12px 30px #49271977;min-width:140px}
+  .restaurant-hub .fork{font-size:22px;display:block;line-height:1.1}
+  .restaurant-hub strong{display:block;font-size:15px;letter-spacing:-.04em}
+  .restaurant-hub small{font-size:8px;letter-spacing:.12em;font-weight:850}
+  .restaurant-hub:after{content:"";position:absolute;left:calc(50% - 9px);bottom:-11px;width:16px;height:16px;background:#7c1c1e;border-right:2px solid white;border-bottom:2px solid white;transform:rotate(45deg)}
+  .ar-overlay{position:absolute;inset:0;background:#081e15a8;z-index:5;display:none;align-items:center;justify-content:center;padding:18px}
+  .ar-overlay.open{display:flex}
+  .ar-scene{width:100%;height:100%;min-height:360px;border:1px solid #ffffff66;border-radius:18px;position:relative;overflow:hidden;background:linear-gradient(#9ed0e8 0%,#d3e6d0 40%,#477e4b 100%)}
+  .ar-scene:before{content:"";position:absolute;left:-10%;right:-10%;top:20%;height:45%;background:#5b9662;clip-path:polygon(0 100%,14% 35%,24% 60%,40% 4%,56% 54%,71% 14%,85% 61%,100% 10%,100% 100%)}
+  .ar-scene:after{content:"";position:absolute;left:12%;right:12%;bottom:13%;height:30%;background:radial-gradient(ellipse,#a6d4dd 0 28%,#3b8b9d 29% 45%,transparent 46%);filter:drop-shadow(0 8px 0 #3b6945)}
+  .ar-hud{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;color:#fff;font-size:10px;font-weight:850;text-shadow:0 1px 5px #000}
+  .ar-world{position:absolute;z-index:2;left:50%;top:48%;transform:translate(-50%,-50%);font-size:92px;filter:drop-shadow(0 15px 8px #183c2d88);animation:float 3s ease-in-out infinite}
+  .ar-world.restaurant{font-size:78px}
+  .ar-card{position:absolute;z-index:3;left:12px;right:12px;bottom:12px;background:#fffef4;border-radius:15px;padding:12px;color:#17382d;box-shadow:var(--shadow)}
+  .ar-card strong{font-size:13px}.ar-card p{font-size:11px;color:#65776b;margin:4px 0 9px}
+  .ar-card-actions{display:flex;gap:7px}.ar-card-actions button{flex:1}
+  @keyframes float{0%,100%{transform:translate(-50%,-48%)}50%{transform:translate(-50%,-55%)}}
+  .side{display:flex;flex-direction:column;gap:12px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 7px 22px #193b2a08}
+  .panel h3{margin:0 0 4px;font-size:15px;letter-spacing:-.025em}
+  .panel .sub{font-size:11px;color:var(--muted);line-height:1.45;margin:0 0 12px}
+  .feature-list{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .feature{background:#f5f7ef;border:1px solid #e8eddf;border-radius:13px;padding:11px 9px;min-height:80px}
+  .feature .ico{font-size:21px;display:block;margin-bottom:7px}
+  .feature strong{font-size:11px;display:block}.feature span{font-size:9px;color:#6b7c70;display:block;margin-top:3px;line-height:1.35}
+  .detail{background:linear-gradient(135deg,#143d30,#225d43);color:#fff;border:0}
+  .detail .sub{color:#d1e1d5}
+  .detail-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .detail-emoji{width:55px;height:55px;border-radius:15px;background:#d8f36e;display:grid;place-items:center;font-size:29px;flex-shrink:0}
+  .distance{font-size:11px;color:#d7f36b;font-weight:800;margin-top:4px}
+  .detail-actions{display:flex;gap:8px}.detail-actions button{flex:1}
+  .detail .secondary{background:#ffffff12;color:#fff;border-color:#ffffff40}
+  .places{display:flex;flex-direction:column;gap:8px}
+  .place-row{display:flex;align-items:center;gap:10px;border:1px solid #e7ebdf;border-radius:13px;padding:9px;background:#fff;text-align:left;width:100%;color:var(--ink)}
+  .place-emoji{height:42px;width:48px;border-radius:10px;display:grid;place-items:center;background:#e5efda;font-size:22px;flex-shrink:0}
+  .place-text{flex:1;min-width:0}.place-text strong{display:block;font-size:11px}.place-text span{display:block;font-size:9px;color:#758277;margin-top:3px}
+  .place-arrow{font-size:18px;color:#76917e}
+  .bottom-note{font-size:10px;color:#748278;text-align:center;margin:17px 0 0;line-height:1.5}
+  .toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#12392e;color:#fff;padding:11px 15px;border-radius:12px;font-size:12px;box-shadow:var(--shadow);z-index:20;transition:.25s}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .modal-backdrop{position:fixed;inset:0;background:#071b14a8;z-index:30;display:none;align-items:center;justify-content:center;padding:18px}
+  .modal-backdrop.open{display:flex}
+  .modal{max-width:440px;width:100%;background:#fffef8;border-radius:22px;padding:22px;box-shadow:var(--shadow);position:relative}
+  .close{position:absolute;right:14px;top:14px;border:0;border-radius:50%;width:32px;height:32px;background:#edf1e7;color:#17382d;font-size:18px}
+  .modal h2{margin:0 38px 8px 0;font-size:22px;letter-spacing:-.04em}
+  .modal p{color:#627368;font-size:13px;line-height:1.6}
+  .modal .modal-emoji{font-size:42px;margin-bottom:8px}
+  .modal-actions{display:flex;gap:8px;flex-wrap:wrap}
+  @media(max-width:800px){
+    .topbar{height:62px;padding:0 15px}.top-actions .pill:first-child{display:none}
+    .hero{padding:22px 16px}.hero-row{display:block}.hero-cta{justify-content:flex-start;margin-top:16px}
+    .content{padding:16px}.workspace{grid-template-columns:1fr}.map-card{min-height:490px}
+    .side{display:grid;grid-template-columns:1fr 1fr}.detail{grid-column:1/-1}
+  }
+  @media(max-width:520px){
+    .brand{font-size:17px}.top-actions .pill{padding:8px 10px}
+    .hero p{font-size:13px}.section-head{align-items:flex-start;flex-direction:column}
+    .map-card{min-height:500px}.pin .label{font-size:9px;padding:6px}.pin .dot{height:29px;width:29px}
+    .pin.p1{left:32%;top:26%}.pin.p2{left:55%;top:41%}.pin.p3{left:2%;top:53%}.pin.p4{right:0;top:62%}.pin.p5{left:5%;top:72%}.pin.p6{right:2%;top:23%}
+    .restaurant-hub{left:47%;top:52%;min-width:118px;padding:9px 10px}.restaurant-hub strong{font-size:13px}
+    .side{grid-template-columns:1fr}.detail{grid-column:auto}
+    .feature-list{grid-template-columns:1fr 1fr}
+    .map-top-label{top:10px;left:10px}.map-controls{left:8px;right:8px;bottom:8px}.map-controls button{padding:8px 9px;font-size:9px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">⌁</div><div>Explore Ooty<small>AR TOURISM EXPERIENCE</small></div></div>
+    <div class="top-actions"><button class="pill" id="helpBtn">How it works</button><button class="pill" id="locationBtn">◎ Use my location</button></div>
+  </header>
+  <section class="hero">
+    <div class="hero-row">
+      <div>
+        <div class="eyebrow">Your pocket-sized Nilgiris guide</div>
+        <h1>Discover Ooty.<br><span>Bring it to life in AR.</span></h1>
+        <p>Explore attractions, discover restaurants with LiveDish-AI, and bring a miniature Ooty world into your surroundings — all from your phone browser.</p>
+        <div class="hero-badges"><span class="tag">✦ No app install planned</span><span class="tag">◉ Interactive 3D map</span><span class="tag">♨ Restaurant AR menus</span></div>
+      </div>
+      <div class="hero-cta"><button class="primary" id="launchAr">▣ Launch AR demo</button><button class="secondary" id="exploreMap">⌖ Explore map</button></div>
+    </div>
+  </section>
+  <main class="content">
+    <div class="section-head">
+      <div><h2>Your Ooty discovery map</h2><p>Tap a pin to preview the destination or restaurant.</p></div>
+      <div class="segmented" aria-label="Map display"><button class="active" id="mapMode">Map</button><button id="listMode">Places list</button></div>
+    </div>
+    <div class="workspace">
+      <section class="map-card" id="mapCard" aria-label="Illustrated interactive Ooty map">
+        <div class="map-art" id="mapArt">
+          <div class="mountain back"></div><div class="mountain"></div>
+          <div class="cloud" style="left:13%">☁</div><div class="cloud" style="right:20%;top:15%">☁</div>
+          <div class="lake"></div><div class="forest"></div><div class="tea"></div><div class="garden"></div>
+          <div class="road"></div><div class="road r2"></div><div class="mini-houses">🏡 🏘️ 🏡</div><div class="rail">🚂</div>
+          <div class="map-top-label"><strong>Explore Ooty AR</strong><span>Illustrated demo map · tap any pin</span></div>
+          <button class="pin purple p1" data-place="peak"><span class="dot"><span>▲</span></span><span class="label">Doddabetta Peak<small>Panoramic views</small></span></button>
+          <button class="pin blue p2" data-place="lake"><span class="dot"><span>⌁</span></span><span class="label">Ooty Lake<small>Boating & views</small></span></button>
+          <button class="pin red p3" data-place="tea"><span class="dot"><span>♧</span></span><span class="label">Tea Estates<small>Nilgiri tea</small></span></button>
+          <button class="pin green p4" data-place="garden"><span class="dot"><span>✿</span></span><span class="label">Botanical Garden<small>Flowers & lawns</small></span></button>
+          <button class="pin orange p5" data-place="train"><span class="dot"><span>🚂</span></span><span class="label">Nilgiri Railway<small>Toy train</small></span></button>
+          <button class="pin pink p6" data-place="restaurant"><span class="dot"><span>♨</span></span><span class="label">LiveDish-AI<small>Restaurant AR hub</small></span></button>
+          <button class="restaurant-hub" data-place="restaurant"><span class="fork">🍴</span><strong>LiveDish-AI</strong><small>RESTAURANT AR MENU</small></button>
+        </div>
+        <div class="ar-overlay" id="arOverlay">
+          <div class="ar-scene">
+            <div class="ar-hud"><span>◉ AR DEMO MODE</span><button class="pill" id="closeAr">✕ Close</button></div>
+            <div class="ar-world" id="arWorld">🏞️</div>
+            <div class="ar-card"><strong id="arTitle">Ooty Miniature World</strong><p id="arDescription">A preview of how the 3D Ooty scene could appear in your surroundings.</p><div class="ar-card-actions"><button class="primary" id="changeModel">↻ Change model</button><button class="secondary" id="arDetails">View details</button></div></div>
+          </div>
+        </div>
+        <div class="map-controls">
+          <button class="active" id="mapViewBtn">⌖ Map view</button><button id="miniBtn">⬡ Miniature view</button><button id="restaurantBtn">♨ Restaurants</button><button id="resetBtn">↻ Reset</button>
+        </div>
+      </section>
+      <aside class="side">
+        <section class="panel detail" id="detailPanel">
+          <div class="detail-top"><div class="detail-emoji" id="detailEmoji">🏞️</div><div><h3 id="detailTitle">Welcome to Ooty</h3><div class="distance" id="detailDistance">Choose a pin to explore</div></div></div>
+          <p class="sub" id="detailDescription">Tap an attraction pin on the map to see a sample description, useful information and available actions.</p>
+          <div class="detail-actions"><button class="primary" id="directionsBtn">➤ Directions</button><button class="secondary" id="detailsBtn">More info</button></div>
+        </section>
+        <section class="panel">
+          <h3>Explore by experience</h3><p class="sub">Choose what you want to discover next.</p>
+          <div class="feature-list">
+            <button class="feature" data-action="attractions"><span class="ico">📍</span><strong>Attractions</strong><span>Landmarks & nature</span></button>
+            <button class="feature" data-action="restaurants"><span class="ico">🍽️</span><strong>Restaurants</strong><span>Powered by LiveDish-AI</span></button>
+            <button class="feature" data-action="ar"><span class="ico">🧊</span><strong>3D AR models</strong><span>Miniature Ooty world</span></button>
+            <button class="feature" data-action="trip"><span class="ico">🗺️</span><strong>My Ooty trip</strong><span>Build a simple itinerary</span></button>
+          </div>
+        </section>
+        <section class="panel" id="placesPanel">
+          <h3>Popular places</h3><p class="sub">Sample locations for this visual prototype.</p>
+          <div class="places">
+            <button class="place-row" data-place="lake"><span class="place-emoji">🛶</span><span class="place-text"><strong>Ooty Lake</strong><span>Boating · Scenic views</span></span><span class="place-arrow">›</span></button>
+            <button class="place-row" data-place="peak"><span class="place-emoji">⛰️</span><span class="place-text"><strong>Doddabetta Peak</strong><span>Mountain viewpoint</span></span><span class="place-arrow">›</span></button>
+            <button class="place-row" data-place="train"><span class="place-emoji">🚂</span><span class="place-text"><strong>Nilgiri Mountain Railway</strong><span>Heritage train experience</span></span><span class="place-arrow">›</span></button>
+            <button class="place-row" data-place="restaurant"><span class="place-emoji">🍴</span><span class="place-text"><strong>LiveDish-AI Restaurants</strong><span>Discover menus in 3D AR</span></span><span class="place-arrow">›</span></button>
+          </div>
+        </section>
+      </aside>
+    </div>
+    <p class="bottom-note">Prototype only: map positions, distances, hours, restaurant listings and QR flow are illustrative placeholders. Real navigation, current details, location access and camera-based AR must be connected before launch.</p>
+  </main>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal"><button class="close" id="modalClose" aria-label="Close">×</button><div class="modal-emoji" id="modalEmoji">🗺️</div><h2 id="modalTitle">How Explore Ooty AR works</h2><p id="modalText">This interactive mockup demonstrates the planned tourist flow. A production version can use the phone camera to place a 3D map and connect pins to real attraction and restaurant data.</p><div class="modal-actions"><button class="primary" id="modalPrimary">Try AR demo</button><button class="secondary" id="modalSecondary">Back to map</button></div></div>
+</div>
+<script>
+const places = {
+  peak:{name:"Doddabetta Peak",emoji:"⛰️",distance:"Distance shown after location is enabled",desc:"A popular Nilgiri viewpoint known for broad mountain scenery. In the finished experience, this pin can open photos, visitor information and directions.",hours:"Check current local information",color:"purple"},
+  lake:{name:"Ooty Lake",emoji:"🛶",distance:"Distance shown after location is enabled",desc:"A well-known Ooty stop for lake views and boating. Tap directions to open a map service in a production version.",hours:"Verify current hours before visiting",color:"blue"},
+  tea:{name:"Nilgiri Tea Estates",emoji:"🍃",distance:"Explore nearby tea experiences",desc:"Discover tea gardens, local tea shops and short stories about Nilgiri tea. Partner visits and offers can be added later.",hours:"Depends on individual estate"},
+  garden:{name:"Botanical Garden",emoji:"🌺",distance:"Distance shown after location is enabled",desc:"Explore landscaped gardens and seasonal flowers. The live portal should show verified opening hours and entry details.",hours:"Verify official visitor information"},
+  train:{name:"Nilgiri Mountain Railway",emoji:"🚂",distance:"View route and station information",desc:"Discover the heritage railway with photos, route information and a miniature train model you can preview in AR.",hours:"Check official train schedules"},
+  restaurant:{name:"LiveDish-AI Restaurants",emoji:"🍴",distance:"Restaurant discovery hub",desc:"Browse participating restaurants, view menus and prices, preview supported dishes in 3D AR, and contact or order from restaurants where available.",hours:"Hours depend on each restaurant"}
+};
+let selected="lake", modelIndex=0;
+const $=id=>document.getElementById(id);
+function toast(message){const t=$("toast");t.textContent=message;t.classList.add("show");clearTimeout(window.toastTimer);window.toastTimer=setTimeout(()=>t.classList.remove("show"),2600)}
+function selectPlace(key){
+  if(!places[key]) return; selected=key; const p=places[key];
+  $("detailEmoji").textContent=p.emoji; $("detailTitle").textContent=p.name; $("detailDistance").textContent=p.distance; $("detailDescription").textContent=p.desc;
+  document.querySelectorAll(".pin").forEach(b=>b.classList.toggle("selected",b.dataset.place===key));
+  if(key==="restaurant") $("detailPanel").style.background="linear-gradient(135deg,#60201d,#a83b2c)";
+  else $("detailPanel").style.background="linear-gradient(135deg,#143d30,#225d43)";
+}
+function showModal(title,text,emoji="🗺️"){ $("modalTitle").textContent=title;$("modalText").textContent=text;$("modalEmoji").textContent=emoji;$("modalBackdrop").classList.add("open");}
+function launchAr(){
+  $("arOverlay").classList.add("open"); $("arTitle").textContent=selected==="restaurant"?"LiveDish-AI Restaurant Hub":(places[selected]?.name||"Ooty Miniature World");
+  $("arDescription").textContent=selected==="restaurant"?"Imagine tapping the restaurant marker to open menus and view supported dishes in 3D AR.":`AR concept preview for ${places[selected]?.name||"Ooty"} — camera-based placement is not connected in this prototype.`;
+  $("arWorld").textContent=selected==="restaurant"?"🏡":(places[selected]?.emoji||"🏞️");
+  $("arWorld").classList.toggle("restaurant",selected==="restaurant");
+}
+document.querySelectorAll("[data-place]").forEach(el=>el.addEventListener("click",()=>selectPlace(el.dataset.place)));
+$("launchAr").addEventListener("click",launchAr); $("closeAr").addEventListener("click",()=>$("arOverlay").classList.remove("open"));
+$("miniBtn").addEventListener("click",()=>{selectPlace("lake");launchAr();$("arWorld").textContent="🏞️";toast("Miniature AR concept opened");});
+$("mapViewBtn").addEventListener("click",()=>{ $("arOverlay").classList.remove("open");$("mapViewBtn").classList.add("active");$("miniBtn").classList.remove("active");toast("Map view selected");});
+$("mapViewBtn").addEventListener("click",()=>{$("mapArt").style.filter="none";});
+$("restaurantBtn").addEventListener("click",()=>{selectPlace("restaurant");toast("LiveDish-AI restaurant hub selected");});
+$("resetBtn").addEventListener("click",()=>{selectPlace("lake");$("arOverlay").classList.remove("open");$("mapArt").style.filter="none";toast("Map reset");});
+$("exploreMap").addEventListener("click",()=>{$("mapCard").scrollIntoView({behavior:"smooth",block:"center"});toast("Tap any pin to explore");});
+$("listMode").addEventListener("click",()=>{$("listMode").classList.add("active");$("mapMode").classList.remove("active");$("placesPanel").scrollIntoView({behavior:"smooth",block:"nearest"});toast("Popular places list");});
+$("mapMode").addEventListener("click",()=>{$("mapMode").classList.add("active");$("listMode").classList.remove("active");$("mapCard").scrollIntoView({behavior:"smooth",block:"nearest"});});
+$("directionsBtn").addEventListener("click",()=>toast("Demo only — connect a real maps URL for directions."));
+$("detailsBtn").addEventListener("click",()=>showModal(places[selected].name,places[selected].desc+" "+places[selected].hours,places[selected].emoji));
+$("helpBtn").addEventListener("click",()=>showModal("How Explore Ooty AR works","This prototype lets you tap attraction pins, preview a restaurant hub and open a simulated AR scene. A production build needs a camera-based WebAR framework, real location data, and verified attraction/restaurant information.","✨"));
+$("locationBtn").addEventListener("click",()=>{if(!navigator.geolocation){toast("Location is not available in this browser.");return;}toast("Location access would be requested here in the live version.");});
+$("changeModel").addEventListener("click",()=>{const models=["🏞️","🚂","🍃","🌺","🍴","🛶"];modelIndex=(modelIndex+1)%models.length;$("arWorld").textContent=models[modelIndex];toast("Preview model changed");});
+$("arDetails").addEventListener("click",()=>{ $("arOverlay").classList.remove("open");showModal(places[selected]?.name||"Explore Ooty",places[selected]?.desc||"Discover Ooty in AR.",places[selected]?.emoji||"🏞️");});
+$("modalClose").addEventListener("click",()=>$("modalBackdrop").classList.remove("open"));
+$("modalSecondary").addEventListener("click",()=>$("modalBackdrop").classList.remove("open"));
+$("modalPrimary").addEventListener("click",()=>{$("modalBackdrop").classList.remove("open");launchAr();});
+document.querySelectorAll("[data-action]").forEach(el=>el.addEventListener("click",()=>{
+  const action=el.dataset.action;
+  if(action==="ar"){launchAr();return;}
+  if(action==="restaurants"){selectPlace("restaurant");toast("LiveDish-AI restaurants selected");return;}
+  if(action==="attractions"){selectPlace("peak");toast("Tap any attraction pin on the map");return;}
+  if(action==="trip"){showModal("My Ooty trip","A future version can save attractions, arrange them into a day plan and show a route between stops. This demo does not save trips yet.","🗺️");}
+}));
+selectPlace("lake");
+</script>
+</body>
+</html>
